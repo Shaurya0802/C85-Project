@@ -1,58 +1,61 @@
-import React from 'react';
-import {StyleSheet, Text, View, Dimensions, Animated, TouchableHighlight} from 'react-native';
-import {ListItem, Icon} from 'react-native-elements';
-import {SwipeListView} from 'react-native-swipe-list-view';
+import React, { Component } from 'react';
+import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
+import { ListItem, Icon } from 'react-native-elements';
+import { SwipeListView } from 'react-native-swipe-list-view';
 import db from '../config';
 
-export default class SwipeableFlatlist extends React.Component {
+
+export default class SwipeableFlatlist extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            allNotifications: this.props.allNotifications
+            allNotifications : this.props.allNotifications,
         }
     }
 
-    updateMarkAsRead = (notification) => {
-        db.collection('all_notifications').doc(notification.doc_id).update({
-            "notification_status": "read"
+    updateMarkAsRead =(notification)=>{
+        db.collection("all_notifications").doc(notification.doc_id).update({
+            "notification_status" : "read"
         });
     }
 
-    onSwipeChangeValue = (swipeData) => {
-        var allNotifications = this.state.allNotifications;
-        const {key, value} = swipeData;
+    onSwipeValueChange = swipeData => {
+        var allNotifications = this.state.allNotifications
+        const {key,value} = swipeData;
 
         if (value < -Dimensions.get('window').width) {
             const newData = [...allNotifications];
             const prevIndex = allNotifications.findIndex(item => item.key === key);
             this.updateMarkAsRead(allNotifications[prevIndex]);
             newData.splice(prevIndex, 1);
-            this.setState({allNotifications: newData});
+            this.setState({allNotifications : newData});
         }
     }
 
-    renderItem = (data) => {
-        <ListItem 
-            leftElement = {<Icon name="book" type="font-awesome" color="#696969" />}
-            title={data.item.thing_name}
-            titleStyle={{color: '#000', fontWeight: 'bold'}}
-            subtitle={data.item.message}
-            bottomDivider
-        />
-    }
+    renderItem = data => (
+        <Animated.View>
+            <ListItem
+                leftElement={<Icon name="book" type="font-awesome" color ='#696969'/>}
+                title={data.item.thing_name}
+                titleStyle={{ color: 'black', fontWeight: 'bold' }}
+                subtitle={data.item.message}
+                bottomDivider
+            />
+        </Animated.View>
+    );
 
-    renderHiddenItem = () => {
+    renderHiddenItem = () => (
         <View style={styles.rowBack}>
-            <View style={[styles.BackRightBtn, styles.BackRightBtnRight]}>
+            <View style={[styles.backRightBtn, styles.backRightBtnRight]}>
                 <Text style={styles.backTextWhite}></Text>
             </View>
         </View>
-    }
+    );
 
-    render() {
-        return (
+    render(){
+        return(
             <View style={styles.container}>
-                <SwipeListView 
+                <SwipeListView
                     disableRightSwipe
                     data={this.state.allNotifications}
                     renderItem={this.renderItem}
@@ -61,12 +64,13 @@ export default class SwipeableFlatlist extends React.Component {
                     previewRowKey={'0'}
                     previewOpenValue={-40}
                     previewOpenDelay={3000}
-                    onSwipeValueChange={this.onSwipeChangeValue}
+                    onSwipeValueChange={this.onSwipeValueChange}
                 />
             </View>
-        );
+        )
     }
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -75,18 +79,12 @@ const styles = StyleSheet.create({
     },
     backTextWhite: {
         color: '#FFF',
-    },
-    rowFront: {
-        alignItems: 'center',
-        backgroundColor: '#CCC',
-        borderBottomColor: 'black',
-        borderBottomWidth: 1,
-        justifyContent: 'center',
-        height: 50,
+        fontWeight:'bold',
+        fontSize:15
     },
     rowBack: {
         alignItems: 'center',
-        backgroundColor: '#DDD',
+        backgroundColor: '#29b6f6',
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -98,14 +96,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         position: 'absolute',
         top: 0,
-        width: 75,
-    },
-    backRightBtnLeft: {
-        backgroundColor: 'blue',
-        right: 75,
+        width: 100,
     },
     backRightBtnRight: {
-        backgroundColor: 'red',
+        backgroundColor: '#29b6f6',
         right: 0,
     },
 });
